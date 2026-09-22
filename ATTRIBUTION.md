@@ -79,5 +79,9 @@ the paper establishes.
 ## This repository's own work
 
 The hooks, the scoring model, the scope system, and the tests are this
-repository's own. No license has been chosen for them yet, so default copyright
-applies and there is no grant to redistribute. Pick one before publishing.
+repository's own, released under the MIT License. See [LICENSE](LICENSE).
+
+MIT covers this repository's own work only. It does not and cannot relicense the
+upstream material above: the ported narrative rules keep Jens Heitmann's MIT
+notice, and the surface rule catalog carries CC BY-SA 4.0 share-alike
+obligations from Wikipedia. Both travel with any redistribution.

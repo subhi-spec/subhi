@@ -130,6 +130,15 @@ StoryScope feature tables, genre calibration, and the per-model fingerprints
 Regex cannot do that work. If you write fiction or personal essays, install their
 skills alongside these hooks and run both.
 
+## License
+
+MIT for this repository's own work — the hooks, the scoring model, the scope
+system, the tests. See [LICENSE](LICENSE).
+
+Portions carry upstream terms that MIT does not override, including CC BY-SA 4.0
+material with share-alike obligations. Read [ATTRIBUTION.md](ATTRIBUTION.md)
+before redistributing.
+
 ## Limits
 
 Regex catches phrasing, not thinking. A draft can score clean and still be empty.

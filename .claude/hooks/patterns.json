@@ -1,0 +1,219 @@
+{
+  "//": "Single source of truth for the humanizer stack. The PostToolUse hook reads this file, and .claude/skills/humanizer/SKILL.md points writers at it. Edit here, both stay in sync.",
+
+  "scope": {
+    "include": [
+      "**/*.md",
+      "**/*.mdx",
+      "**/*.txt",
+      "**/*.html",
+      "content/**",
+      "drafts/**",
+      "emails/**",
+      "marketing/**",
+      "posts/**"
+    ],
+    "exclude": [
+      "**/CLAUDE.md",
+      "**/AGENTS.md",
+      "**/README.md",
+      "**/CHANGELOG.md",
+      "**/LICENSE*",
+      "**/node_modules/**",
+      "**/.git/**",
+      "**/vendor/**",
+      "**/dist/**",
+      "**/build/**",
+      ".claude/**",
+      "docs/api/**",
+      "samples/**",
+      "tests/**",
+      "**/*.lock"
+    ]
+  },
+
+  "thresholds": {
+    "min_words": 40,
+    "block_score": 6,
+    "em_dash_per_1000_words": 6.0,
+    "burstiness_min_stdev": 5.0,
+    "burstiness_min_sentences": 8,
+    "concreteness_min_per_100_words": 1.0
+  },
+
+  "weights": { "high": 3, "medium": 1 },
+
+  "lexical": [
+    {
+      "id": "inflated-symbolism",
+      "severity": "high",
+      "why": "Ceremonial significance the subject did not earn. Say what happened instead.",
+      "patterns": [
+        "\\b(?:stands|serves|stood|served)\\s+as\\s+a\\s+testament\\b",
+        "\\bis\\s+a\\s+testament\\s+to\\b",
+        "\\bplays?\\s+a\\s+(?:pivotal|vital|crucial|key|significant)\\s+role\\b",
+        "\\brich\\s+(?:tapestry|history|cultural\\s+heritage)\\b",
+        "\\b(?:a|the)\\s+beacon\\s+of\\b",
+        "\\bwatershed\\s+moment\\b",
+        "\\bparadigm\\s+shift\\b",
+        "\\bcornerstone\\s+of\\b",
+        "\\bindelible\\s+mark\\b",
+        "\\bmarking\\s+a\\s+(?:significant|major|new)\\b",
+        "\\bunderscor(?:es|ing)\\s+the\\s+(?:importance|need|significance)\\b",
+        "\\bhighlight(?:s|ing)\\s+the\\s+importance\\s+of\\b"
+      ]
+    },
+    {
+      "id": "ai-vocabulary",
+      "severity": "high",
+      "why": "Words that cluster far more densely in model output than in human drafts.",
+      "patterns": [
+        "\\bdelv(?:e|es|ing)\\s+into\\b",
+        "\\bnavigat(?:e|es|ing)\\s+the\\s+(?:complexities|landscape|challenges|world)\\b",
+        "\\bever-(?:evolving|changing|growing)\\b",
+        "\\bin\\s+(?:today's|the)\\s+(?:digital|fast-paced|modern)\\s+\\w+\\b",
+        "\\bgame[- ]chang(?:er|ing)\\b",
+        "\\bunlock(?:s|ing)?\\s+(?:the\\s+)?(?:power|potential|value|secrets)\\b",
+        "\\bharness(?:es|ing)?\\s+the\\s+power\\b",
+        "\\bsupercharge\\b",
+        "\\btransformative\\b",
+        "\\bseamless(?:ly)?\\b",
+        "\\bsynergy\\b",
+        "\\bholistic\\b",
+        "\\belevate\\s+your\\b",
+        "\\bempower(?:s|ing|ed)?\\s+(?:you|users|teams|businesses)\\b",
+        "\\bdive\\s+(?:right\\s+)?in\\b",
+        "\\bthe\\s+realm\\s+of\\b",
+        "\\bembark\\s+on\\s+(?:a|this|your)\\s+journey\\b"
+      ]
+    },
+    {
+      "id": "negative-parallelism",
+      "severity": "high",
+      "why": "The 'not X, but Y' reveal. One per piece is a choice; two is a tic.",
+      "patterns": [
+        "\\b(?:it'?s|this\\s+is|that'?s|they'?re)\\s+not\\s+just\\s+[^.!?]{2,60}?,\\s*(?:it'?s|this\\s+is|that'?s|they'?re)\\b",
+        "\\bnot\\s+(?:just|merely|simply|only)\\s+[^.!?]{2,60}?\\s+but\\s+(?:also\\s+)?\\b",
+        "\\bisn'?t\\s+(?:just\\s+)?about\\s+[^.!?]{2,60}?,\\s*it'?s\\s+about\\b",
+        "\\bnot\\s+[^.!?]{2,40}?,\\s*but\\s+rather\\b"
+      ]
+    },
+    {
+      "id": "participial-tail",
+      "severity": "medium",
+      "why": "A trailing -ing clause that restates the sentence instead of adding to it.",
+      "patterns": [
+        ",\\s+(?:highlighting|reflecting|emphasizing|showcasing|underscoring|demonstrating|ensuring|solidifying|cementing|illustrating|signaling|marking|paving)\\s+[^.!?]{5,}[.!?]"
+      ]
+    },
+    {
+      "id": "vague-attribution",
+      "severity": "high",
+      "why": "A claim with no source behind it. Name who, or cut it.",
+      "patterns": [
+        "\\b(?:industry\\s+)?experts\\s+(?:say|agree|believe|note|suggest)\\b",
+        "\\bstudies\\s+have\\s+shown\\b",
+        "\\bresearch\\s+(?:shows|suggests|indicates)\\s+that\\b(?![^.!?]{0,80}\\()",
+        "\\bit\\s+is\\s+(?:widely|generally)\\s+(?:regarded|believed|considered|accepted)\\b",
+        "\\bmany\\s+(?:believe|argue|say|consider)\\b",
+        "\\bobservers\\s+(?:note|say)\\b",
+        "\\bsome\\s+(?:argue|would\\s+say)\\b"
+      ]
+    },
+    {
+      "id": "filler-transitions",
+      "severity": "medium",
+      "why": "Connective throat-clearing. Delete and the sentence still works.",
+      "patterns": [
+        "(?:^|\\n|[.!?][\"\u2019\\)]?\\s+)(?:Moreover|Furthermore|Additionally|Notably|Importantly|Consequently)\\b",
+        "\\bit'?s\\s+(?:worth|important)\\s+(?:noting|to\\s+note)\\s+that\\b",
+        "\\bwhen\\s+it\\s+comes\\s+to\\b",
+        "\\bat\\s+the\\s+end\\s+of\\s+the\\s+day\\b",
+        "\\bneedless\\s+to\\s+say\\b",
+        "\\bin\\s+order\\s+to\\b"
+      ]
+    },
+    {
+      "id": "canned-frame",
+      "severity": "high",
+      "why": "Essay scaffolding. Human drafts start in the middle and stop when done.",
+      "patterns": [
+        "(?:^|\\n|[.!?][\"\u2019\\)]?\\s+)(?:In\\s+conclusion|To\\s+sum\\s+up|In\\s+summary|Overall|All\\s+in\\s+all|To\\s+wrap\\s+up)\\b",
+        "(?:^|\\n|[.!?][\"\u2019\\)]?\\s+)(?:In\\s+the\\s+world\\s+of|In\\s+an\\s+era\\s+(?:of|where))\\b",
+        "\\bwhether\\s+you'?re\\s+a\\s+[^.!?]{2,40}?\\s+or\\s+a\\s+\\b",
+        "\\bhope\\s+this\\s+helps\\b",
+        "\\bhappy\\s+(?:coding|writing|building)\\b",
+        "\\blet'?s\\s+(?:dive|jump)\\s+(?:in|into)\\b"
+      ]
+    },
+    {
+      "id": "corporate-verbs",
+      "severity": "medium",
+      "why": "Latinate stand-ins for plain verbs: use, help, start, use up.",
+      "patterns": [
+        "\\butiliz(?:e|es|ing|ation)\\b",
+        "\\bleverag(?:e|es|ing)\\b",
+        "\\bfacilitat(?:e|es|ing)\\b",
+        "\\bfoster(?:s|ing)?\\s+(?:a|an|the)\\b",
+        "\\bcommenc(?:e|es|ing)\\b",
+        "\\boptimiz(?:e|es|ing)\\s+your\\b"
+      ]
+    },
+    {
+      "id": "promo-adjectives",
+      "severity": "medium",
+      "why": "Brochure adjectives. They describe enthusiasm, not the thing.",
+      "patterns": [
+        "\\bbreathtaking\\b",
+        "\\bstunning\\b",
+        "\\bvibrant\\b",
+        "\\bbustling\\b",
+        "\\bmust-(?:visit|have|read|try)\\b",
+        "\\bnestled\\s+(?:in|between|among)\\b",
+        "\\bboasts?\\s+(?:a|an|the|over)\\b",
+        "\\brobust\\s+(?:solution|platform|framework|set)\\b",
+        "\\bcomprehensive\\s+(?:guide|overview|solution)\\b",
+        "\\bmeticulous(?:ly)?\\b"
+      ]
+    },
+    {
+      "id": "hedged-nothing",
+      "severity": "medium",
+      "why": "Hedges that promise nothing. Commit or cut.",
+      "patterns": [
+        "\\bcan\\s+help\\s+you\\s+(?:to\\s+)?\\w+",
+        "\\bmay\\s+(?:be\\s+able\\s+to|vary\\s+depending)\\b",
+        "\\bplays?\\s+an?\\s+important\\s+part\\b",
+        "\\bthere\\s+are\\s+(?:a\\s+)?(?:number|variety)\\s+of\\s+(?:ways|factors|reasons)\\b"
+      ]
+    },
+    {
+      "id": "emoji-bullets",
+      "severity": "medium",
+      "why": "Decorated list markers read as generated formatting, not emphasis.",
+      "patterns": [
+        "(?:^|\\n)\\s*[-*]?\\s*(?:\\u2705|\\u2728|\\ud83d\\ude80|\\ud83d\\udd25|\\ud83d\\udca1|\\ud83c\\udfaf|\\ud83d\\udcc8|\\u26a1|\\ud83d\\udc49)\\s"
+      ]
+    }
+  ],
+
+  "structural": {
+    "em_dash": {
+      "severity": "medium",
+      "why": "Em dash density above human baseline. Swap most for commas, periods, or parentheses."
+    },
+    "rule_of_three": {
+      "severity": "medium",
+      "why": "Stacked three-item lists. Real inventories are lopsided: two items, or five.",
+      "min_triads": 3
+    },
+    "burstiness": {
+      "severity": "high",
+      "why": "Sentence lengths are too uniform. Humans mix an eight-word sentence with a thirty-word one."
+    },
+    "concreteness": {
+      "severity": "high",
+      "why": "Almost no numbers, names, or dates. Abstraction with nothing underneath is the loudest tell."
+    }
+  }
+}

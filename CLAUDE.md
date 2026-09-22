@@ -30,6 +30,13 @@ Default AI shape is intro / three even sections / summary that restates the intr
 Break it on purpose: open mid-thought, end on the sharpest line, let one section
 run three times as long as another if it deserves to.
 
+**Vary the break across pieces.** StoryScope's deepest finding is convergence: all
+five models it tested occupy one tight region of structural space while human
+writers are scattered across it. Rarity is the human signal. So if every piece
+opens mid-thought and ends on a hard line, that is a new cluster, not an escape
+from the old one. Pick a different intervention than last time, and be able to say
+why this piece got this shape.
+
 ### Sentence-level rules
 
 **Banned outright.** delve, tapestry, testament, pivotal, seamless(ly),

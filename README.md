@@ -11,6 +11,11 @@ and from the three sources it points at:
 - [`blader/humanizer`](https://github.com/blader/humanizer)
 - [`jenna-russell/storyscope`](https://github.com/jenna-russell/storyscope) — *StoryScope: Investigating Idiosyncrasies in AI Fiction* (Russell, Rajendhran, Pham, Iyyer, Wieting; COLM 2026)
 
+The reel's own repo is [`NulightJens/humanizer-stack`](https://github.com/NulightJens/humanizer-stack),
+which packages the same sources as two Claude Code skills with a surface scanner
+and a structural one. This repo takes the hook route instead — see
+[Prior art](#prior-art) for where the two differ and what each is better at.
+
 StoryScope is the reason this is a hook and not a word list. It separates AI
 fiction from human fiction at 93.2 macro-F1 using narrative structure alone, and
 still manages 93.9 after the prose has been professionally rewritten. Replacing
@@ -90,6 +95,32 @@ python3 tests/test_check.py
 `samples/ai_draft.md` has to stay above the threshold and `samples/human_draft.md`
 has to stay below it. A rule that flags the human draft is a rule that will flag
 your writing.
+
+## Prior art
+
+[`NulightJens/humanizer-stack`](https://github.com/NulightJens/humanizer-stack)
+is the reference implementation, by the author of the reel. Same sources,
+different shape, and the two are complementary rather than competing.
+
+| | humanizer-stack | this repo |
+|---|---|---|
+| Delivery | Two skills, invoked on intent | Hooks, fire whether or not Claude reaches for them |
+| Scope control | You point the scanner at files | Glob-based, automatic |
+| Surface tells | 4 rules | 10 rules, severity-weighted into one score |
+| Structure | Paragraph-length CV, reader address, numbers | Sentence-length variance, concreteness, em-dash density, triad stacking |
+| Narrative tells | Embodied emotion, stated lesson, tidy closer | Not covered |
+| Reference docs | StoryScope's 30 features with rates, genre calibration, model fingerprints | The rule table in SKILL.md |
+| Escape hatch | `copy-ignore` comment per line | None yet |
+| Tests | — | 24 |
+
+Measured against each other on the fixtures in `samples/`: on marketing copy this
+repo flags 31 tells to their 6, and their em-dash rule false-positives on
+`human_draft.md` because it fires per line rather than on density. On narrative
+prose the result inverts — their structural scanner catches 7 tells in a passage
+where this one catches 1 and would not block.
+
+If you write fiction, personal essays, or anything with a narrator, install their
+skills alongside these hooks.
 
 ## Limits
 

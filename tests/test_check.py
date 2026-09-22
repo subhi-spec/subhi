@@ -51,6 +51,65 @@ class TestFixtures(unittest.TestCase):
         )
 
 
+class TestNarrativeRules(unittest.TestCase):
+    """Rules ported from NulightJens/humanizer-stack (MIT). See ATTRIBUTION.md."""
+
+    def test_narrative_draft_blocks(self):
+        text = (ROOT / "samples" / "narrative_draft.md").read_text(encoding="utf-8")
+        findings, total = hc.check_text(text, CONFIG)
+        self.assertGreaterEqual(total, LIMIT)
+        for expected in ("embodied-emotion", "stated-lesson", "tidy-closer"):
+            self.assertIn(expected, rules(findings))
+
+    def test_embodied_emotion_variants(self):
+        for line in (
+            "Her chest tightened.",
+            "His heart hammered against his ribs.",
+            "A knot formed in the pit of my stomach.",
+            "She swallowed hard and her hands trembled.",
+            "Their blood ran cold.",
+        ):
+            with self.subTest(line=line):
+                found = hc.lexical_findings(line, CONFIG)
+                self.assertIn("embodied-emotion", {f.rule for f in found})
+
+    def test_naming_the_feeling_is_not_flagged(self):
+        # The study's point: humans just say it. This must stay clean.
+        found = hc.lexical_findings("She was furious, and a little relieved.", CONFIG)
+        self.assertNotIn("embodied-emotion", {f.rule for f in found})
+
+
+class TestTailRegion(unittest.TestCase):
+    CLOSER = "In the end, it all came together."
+    FILLER = "The meeting ran long and Priya took notes on the 2019 numbers."
+
+    def _doc(self, closer_at_end):
+        paras = [self.FILLER] * 6
+        if closer_at_end:
+            paras.append(self.CLOSER)
+        else:
+            paras.insert(0, self.CLOSER)
+            paras.append(self.FILLER)
+        return "\n\n".join(paras)
+
+    def test_closer_at_end_fires(self):
+        found = hc.lexical_findings(self._doc(True), CONFIG)
+        self.assertIn("tidy-closer", {f.rule for f in found})
+
+    def test_same_phrase_mid_draft_does_not_fire(self):
+        found = hc.lexical_findings(self._doc(False), CONFIG)
+        self.assertNotIn("tidy-closer", {f.rule for f in found})
+
+    def test_short_doc_treats_whole_text_as_tail(self):
+        found = hc.lexical_findings(self.CLOSER, CONFIG)
+        self.assertIn("tidy-closer", {f.rule for f in found})
+
+    def test_tail_start_offsets(self):
+        text = "a\n\nb\n\nc\n\nd"
+        self.assertEqual(hc.tail_start(text, 2), text.index("c"))
+        self.assertEqual(hc.tail_start(text, 99), 0)
+
+
 class TestPatterns(unittest.TestCase):
     def test_every_pattern_compiles(self):
         for rule in CONFIG["lexical"]:
@@ -62,6 +121,11 @@ class TestPatterns(unittest.TestCase):
         for rule in CONFIG["lexical"]:
             self.assertIn(rule["severity"], CONFIG["weights"])
             self.assertTrue(rule["why"].strip())
+
+    def test_region_field_is_known(self):
+        for rule in CONFIG["lexical"]:
+            if "region" in rule:
+                self.assertEqual(rule["region"], "tail")
 
 
 class TestTextPrep(unittest.TestCase):

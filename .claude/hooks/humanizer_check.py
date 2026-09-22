@@ -108,6 +108,27 @@ def line_of(text: str, index: int) -> int:
     return text.count("\n", 0, index) + 1
 
 
+def paragraph_starts(text: str) -> list[int]:
+    """Character offset of each paragraph, counting blank lines as breaks."""
+    starts = [0]
+    for m in re.finditer(r"\n\s*\n", text):
+        starts.append(m.end())
+    return starts
+
+
+def tail_start(text: str, paragraphs: int) -> int:
+    """Where the last N paragraphs begin.
+
+    Rules marked ``"region": "tail"`` only fire past this point. A tidy closer
+    is only a closer if it closes something; mid-draft the same phrase is
+    ordinary prose.
+    """
+    starts = paragraph_starts(text)
+    if len(starts) <= paragraphs:
+        return 0
+    return starts[-paragraphs]
+
+
 def excerpt(text: str, start: int, end: int, pad: int = 24) -> str:
     left = max(0, start - pad)
     right = min(len(text), end + pad)
@@ -125,9 +146,13 @@ def excerpt(text: str, start: int, end: int, pad: int = 24) -> str:
 
 def lexical_findings(text: str, config: dict) -> list[Finding]:
     found: list[Finding] = []
+    tail = tail_start(text, config.get("thresholds", {}).get("tail_paragraphs", 2))
     for rule in config.get("lexical", []):
+        floor = tail if rule.get("region") == "tail" else 0
         for raw in rule["patterns"]:
             for m in re.finditer(raw, text, re.IGNORECASE | re.MULTILINE):
+                if m.start() < floor:
+                    continue
                 found.append(
                     Finding(
                         line=line_of(text, m.start()),

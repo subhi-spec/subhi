@@ -1,0 +1,41 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run the suite
+        run: python3 tests/test_check.py
+
+      - name: Check the fixtures end to end
+        run: |
+          # The AI and narrative drafts must score over the threshold; the
+          # human draft must stay under it. A rule that flags human_draft.md
+          # is a rule that will flag real writing.
+          ! python3 .claude/hooks/humanizer_check.py samples/ai_draft.md > /dev/null
+          ! python3 .claude/hooks/humanizer_check.py samples/narrative_draft.md > /dev/null
+          python3 .claude/hooks/humanizer_check.py samples/human_draft.md
+
+      - name: Hooks must be executable
+        run: |
+          for hook in .claude/hooks/*.py; do
+            test -x "$hook" || { echo "not executable: $hook"; exit 1; }
+          done

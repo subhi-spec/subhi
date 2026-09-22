@@ -90,6 +90,11 @@ Do not tell the user the hook fired, and never add a note about it to the file.
 
 ## Working on the checker itself
 
-`python3 tests/test_check.py` runs the suite. Both fixtures in `samples/` matter:
-`ai_draft.md` must score at or above the blocking threshold, `human_draft.md` must
-stay below it. A new rule that flags the human fixture is a bad rule.
+`python3 tests/test_check.py` runs the suite; CI runs it on Python 3.10 through
+3.13. All three fixtures in `samples/` matter: `ai_draft.md` and
+`narrative_draft.md` must score at or above the blocking threshold, and
+`human_draft.md` must stay below it. A new rule that flags the human fixture is a
+bad rule.
+
+Rules ported from other projects carry their license. See `ATTRIBUTION.md` before
+adding or redistributing any.

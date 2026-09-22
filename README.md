@@ -31,8 +31,9 @@ CLAUDE.md                          standing rules, loaded every session
 .claude/hooks/humanizer_check.py   PostToolUse — scores the file after a write
 .claude/hooks/writing_context.py   UserPromptSubmit — injects rules on writing prompts
 .claude/skills/humanizer/SKILL.md  the editing procedure, for deeper passes
-samples/                           one AI draft, one human draft
-tests/test_check.py                24 tests
+.github/workflows/tests.yml        CI: the suite on Python 3.10-3.13
+samples/                           one AI draft, one narrative draft, one human draft
+tests/test_check.py                32 tests
 ```
 
 ## How it behaves
@@ -63,7 +64,7 @@ The same command on `samples/human_draft.md` prints `clean`.
 
 ## Setup
 
-Nothing to install. Python 3.9+, standard library only. Clone it, or copy
+Nothing to install. Python 3.10+, standard library only. Clone it, or copy
 `.claude/` and `CLAUDE.md` into a project you already have.
 
 Check that the hooks registered:
@@ -108,19 +109,26 @@ different shape, and the two are complementary rather than competing.
 | Scope control | You point the scanner at files | Glob-based, automatic |
 | Surface tells | 4 rules | 10 rules, severity-weighted into one score |
 | Structure | Paragraph-length CV, reader address, numbers | Sentence-length variance, concreteness, em-dash density, triad stacking |
-| Narrative tells | Embodied emotion, stated lesson, tidy closer | Not covered |
+| Narrative tells | Embodied emotion, stated lesson, tidy closer | Same three, ported (see [ATTRIBUTION.md](ATTRIBUTION.md)) |
 | Reference docs | StoryScope's 30 features with rates, genre calibration, model fingerprints | The rule table in SKILL.md |
 | Escape hatch | `copy-ignore` comment per line | None yet |
-| Tests | — | 24 |
+| Tests | — | 32, on Python 3.10-3.13 |
 
 Measured against each other on the fixtures in `samples/`: on marketing copy this
 repo flags 31 tells to their 6, and their em-dash rule false-positives on
-`human_draft.md` because it fires per line rather than on density. On narrative
-prose the result inverts — their structural scanner catches 7 tells in a passage
-where this one catches 1 and would not block.
+`human_draft.md` because it fires per line rather than on density.
 
-If you write fiction, personal essays, or anything with a narrator, install their
-skills alongside these hooks.
+On narrative prose the result used to invert — their structural scanner caught 7
+tells in `samples/narrative_draft.md` where this one caught 1 and would not have
+blocked. Those three rule families are now ported, and that fixture scores 26
+against a threshold of 6. `tidy-closer` is scoped to the last two paragraphs,
+since a closing phrase mid-draft is just prose.
+
+What has not been ported is the judgment half: their six structural audits, the
+StoryScope feature tables, genre calibration, and the per-model fingerprints
+(Claude's epilogue coda, GPT's retrospective framing, Gemini's tidy endings).
+Regex cannot do that work. If you write fiction or personal essays, install their
+skills alongside these hooks and run both.
 
 ## Limits
 

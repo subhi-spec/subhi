@@ -38,7 +38,8 @@
     "em_dash_per_1000_words": 6.0,
     "burstiness_min_stdev": 5.0,
     "burstiness_min_sentences": 8,
-    "concreteness_min_per_100_words": 1.0
+    "concreteness_min_per_100_words": 1.0,
+    "tail_paragraphs": 2
   },
 
   "weights": { "high": 3, "medium": 1 },
@@ -195,6 +196,59 @@
         "(?:^|\\n)\\s*[-*]?\\s*(?:\\u2705|\\u2728|\\ud83d\\ude80|\\ud83d\\udd25|\\ud83d\\udca1|\\ud83c\\udfaf|\\ud83d\\udcc8|\\u26a1|\\ud83d\\udc49)\\s"
       ]
     }
+  ,
+      {
+          "id": "embodied-emotion",
+          "severity": "high",
+          "why": "Emotion performed through the body. StoryScope's largest single gap: AI does this 81% of the time against 38% for humans. Name the feeling instead.",
+          "patterns": [
+              "\\b(?:my|his|her|their|your|the)\\s+(?:chest|throat|jaw|stomach|gut|shoulders?)\\s+(?:tighten|clench|knot|drop|sink|sag|constrict|seize|flip|twist|churn)\\w*",
+              "\\b(?:my|his|her|their|your|the)\\s+breath\\s+(?:caught|hitched|stalled)\\b",
+              "\\bcaught\\s+(?:my|his|her|their)\\s+breath\\b",
+              "\\b(?:my|his|her|their|your|the)\\s+heart\\s+(?:pound|hammer|race|sink|sank|lurch|clench|skip|stutter)\\w*",
+              "\\ba\\s+knot\\s+(?:of\\s+\\w+\\s+)?(?:in|form)\\w*",
+              "\\bblood\\s+ran\\s+cold\\b",
+              "\\b(?:my|his|her|their|your|the)\\s+pulse\\s+(?:quicken|race|spike)\\w*",
+              "\\bpit\\s+of\\s+(?:my|his|her|their)\\s+stomach\\b",
+              "\\b(?:cold|nervous)\\s+sweat\\b",
+              "\\b(?:my|his|her|their|your|the)\\s+(?:spine|skin|scalp|neck)\\s+(?:tingl|prickl|crawl)\\w*",
+              "\\bswallow(?:ed|s|ing)?\\s+hard\\b",
+              "\\b(?:my|his|her|their|your|the)\\s+hands?\\s+(?:trembl|shak|shook)\\w*",
+              "\\bbreath\\s+(?:I|he|she|they)\\s+(?:didn'?t|hadn'?t)\\s+(?:know|known|realize[ds]?)\\b"
+          ]
+      },
+      {
+          "id": "stated-lesson",
+          "severity": "high",
+          "why": "The takeaway spelled out for the reader. Narrators explain the theme 77% of the time in AI text against 52% for humans. Let the material carry it.",
+          "patterns": [
+              "\\bthe\\s+(?:lesson|takeaway|point|moral)\\s+(?:here\\s+)?is\\b",
+              "\\bwhat\\s+this\\s+means\\s+for\\s+you\\b",
+              "\\bif\\s+you\\s+take\\s+(?:one\\s+thing|only\\s+one\\s+thing|nothing\\s+else)\\b",
+              "\\bhere'?s\\s+(?:the\\s+thing|what\\s+matters|what\\s+I\\s+want\\s+you\\s+to\\s+(?:take|remember))\\b",
+              "\\bthe\\s+bottom\\s+line\\b",
+              "\\bmoral\\s+of\\s+the\\s+story\\b",
+              "\\bthe\\s+(?:real|key|big)\\s+(?:insight|lesson|takeaway|idea)\\s+(?:here\\s+)?is\\b",
+              "\\blet\\s+that\\s+sink\\s+in\\b",
+              "\\bthe\\s+lesson\\s+(?:I|we)\\s+(?:learned|took)\\b",
+              "\\bwhich\\s+is\\s+exactly\\s+why\\b"
+          ]
+      },
+      {
+          "id": "tidy-closer",
+          "severity": "medium",
+          "region": "tail",
+          "why": "A bow on top in the closing paragraphs. Humans leave threads open; AI resolves everything. Cut the coda and end on the previous beat.",
+          "patterns": [
+              "\\bin\\s+the\\s+end\\b",
+              "\\bat\\s+the\\s+end\\s+of\\s+the\\s+day\\b",
+              "\\bultimately\\b",
+              "\\blooking\\s+back\\b",
+              "\\bthe\\s+future\\s+(?:looks|is)\\b",
+              "\\band\\s+(?:I|we)\\s+(?:finally\\s+)?(?:realized|understood|learned)\\s+that\\b",
+              "\\bfull\\s+circle\\b"
+          ]
+      }
   ],
 
   "structural": {
